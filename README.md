@@ -14,7 +14,7 @@ See https://github.com/hashicorp/terraform-provider-aws/issues/23180#issuecommen
 
 ```
 module "creds" {
-  source = "lucydavinhart/terraform-aws-rotating_iam_creds"
+  source = "lucymhdavies/rotating_iam_creds/aws"
 
   user_name     = "my-admin-user"
   policy_arn    = "arn:aws:iam::aws:policy/AdministratorAccess"
