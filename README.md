@@ -5,7 +5,8 @@ Defines an AWS IAM User, and rotates its credentials every so often
 ## WARNING
 
 Currently, due to a missing feature in the resource in the AWS provider, there
-will be moments
+will be moments where the VarSet contains invalid credentials. This is currently
+unavoidable, without making this module significantly more complicated.
 
 See https://github.com/hashicorp/terraform-provider-aws/issues/23180#issuecomment-1086865083
 
