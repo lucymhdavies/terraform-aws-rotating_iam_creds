@@ -9,6 +9,9 @@ terraform {
       version = ">= 4.8.0, < 5.0.0"
     }
   }
+
+  # required for the replace_triggered_by functionality
+  required_version = ">= 1.2"
 }
 
 resource "aws_iam_user" "tf" {
@@ -28,13 +31,17 @@ resource "toggles_leapfrog" "toggle" {
   trigger = var.always_rotate ? null : time_rotating.toggle_interval[0].rotation_rfc3339
 }
 
-# Using counts as a workaround for
-# https://github.com/hashicorp/terraform-provider-aws/issues/23180
-resource "aws_iam_access_key" "tf-alpha" {
-  user  = aws_iam_user.tf.name
-  count = toggles_leapfrog.toggle.alpha ? 1 : 0
-}
-resource "aws_iam_access_key" "tf-beta" {
-  user  = aws_iam_user.tf.name
-  count = toggles_leapfrog.toggle.beta ? 1 : 0
+resource "aws_iam_access_key" "tf" {
+  user = aws_iam_user.tf.name
+
+
+  lifecycle {
+    # Leapfrog toggle alternates between true and false, resulting in a replace trigger
+    replace_triggered_by = [
+      toggles_leapfrog.toggle.alpha,
+    ]
+
+    # And we always want some credentials to exist, so create before destroy
+    create_before_destroy = true
+  }
 }
